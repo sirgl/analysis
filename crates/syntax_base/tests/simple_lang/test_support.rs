@@ -16,7 +16,10 @@ const REWRITE: bool = false;
 /// Assert function: (source file data) -> actual_data
 pub fn test_by_file<F: Fn(&str)->String>(file: PathBuf, expected_data: PathBuf, assert_func: F) {
     let mut source_file = File::open(file).expect(format!("Source data not found").as_str());
-    let mut expected_file = File::open(expected_data.clone()).expect(format!("Expected data not found").as_str());
+    let mut expected_file = match File::open(expected_data.clone()) {
+        Ok(expected_file) => expected_file,
+        Err(_) => File::create(expected_data.clone()).unwrap(),
+    };
 
     let mut source_text = String::new();
     let mut expected_data_text = String::new();
@@ -24,12 +27,8 @@ pub fn test_by_file<F: Fn(&str)->String>(file: PathBuf, expected_data: PathBuf, 
     expected_file.read_to_string(&mut expected_data_text).unwrap();
     let actual_text = assert_func(source_text.as_str());
     if REWRITE {
-        eprintln!("!!!");
-//        File::open(file).unwrap().write_all(actual_text.as_bytes());
-//        fs::
         fs::write(expected_data, actual_text).unwrap();
     } else {
-        eprintln!("@@@");
         assert_eq_text(expected_data_text.as_str(), actual_text.as_str());
     }
 }
