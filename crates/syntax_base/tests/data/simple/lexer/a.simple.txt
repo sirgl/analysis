@@ -1,0 +1,14 @@
+FUN_KW[0; 3)@fun
+WHITESPACE[3; 4)@ 
+ID[4; 7)@foo
+LPAR[7; 8)@(
+ID[8; 9)@a
+COMMA[9; 10)@,
+ID[10; 11)@b
+RPAR[11; 12)@)
+LBRACE[12; 13)@{
+ID[13; 14)@a
+EQ[14; 15)@=
+NUM[15; 17)@12
+ERROR[17; 18)@;
+RBRACE[18; 19)@}
