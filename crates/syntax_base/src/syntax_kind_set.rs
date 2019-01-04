@@ -4,6 +4,11 @@ pub trait SyntaxKindSet {
     fn matches_by_id(&self, id: SyntaxKindId) -> bool;
 }
 
+pub trait IterableSyntaxKindSet : SyntaxKindSet {
+    // TODO replace with Iterator
+    fn iter(&self) -> Vec<SyntaxKindId>;
+}
+
 /// Small token set capable to store at most 128 syntax kinds
 /// Very fast (O(1) all operations)
 pub struct SmallSyntaxKindSet {
@@ -32,7 +37,7 @@ impl SmallSyntaxKindSet {
     }
 }
 
-
+// TODO iterable
 impl SyntaxKindSet for SmallSyntaxKindSet {
     fn matches_by_id(&self, id: SyntaxKindId) -> bool {
         let shifted = 1u128 << id.id;

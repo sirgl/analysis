@@ -51,7 +51,6 @@ impl SyntaxDefinition for SimpleLangSyntax {
 }
 
 
-struct Tree {}
 
 struct SimpleParser {}
 
@@ -60,6 +59,7 @@ impl Parser for SimpleParser {
         let mut api = ParserApi::new(tokens, text);
         let file: GreenNode<PlatformTypes> = parse_file(api, GreenTreeEventSink::new());
 //        let node = SyntaxNode::new(file, Vec::new());
+//        let i = node.kind().id
         file
     }
 }

@@ -2,7 +2,7 @@ use crate::language::LanguageId;
 use crate::syntax_kind_set::SyntaxKindSet;
 
 /// Single representation both for token types and node types
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct SyntaxKind {
     /// TODO it is pretty bad, that purely syntax crate depends on language
     language_id: LanguageId,
