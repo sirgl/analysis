@@ -2,8 +2,8 @@ use text_unit::TextUnit;
 use std::str::Chars;
 use syntax_base::syntax_kind::SyntaxKindId;
 use syntax_base::lexer::Lexer;
-use crate::simple_lang::*;
 use syntax_base::tokens::TokenInfo;
+use crate::simple_lang::syntax::*;
 
 pub struct SimpleLexer {}
 
@@ -153,10 +153,10 @@ fn is_whitespace(ch: char) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::simple_lang::test_support::LexerTest;
     use crate::simple_lang::SimpleLangSyntax;
     use syntax_base::syntax::SyntaxDefinition;
     use std::path::PathBuf;
+    use crate::test_support::LexerTest;
 
     #[test]
     fn test1() {

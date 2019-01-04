@@ -1,3 +1,6 @@
+use text_unit::TextUnit;
+use text_unit::TextRange;
+
 // TODO Is it really highlight type?
 //  probably not, but what is it?
 pub enum HighlightType {
@@ -15,14 +18,33 @@ pub enum Severity {
 
 pub trait Diagnostic {
     fn text(&self) -> String;
+    fn location(&self) -> Location;
 }
 
-pub struct TextDiagnostic<'a> {
-    text: &'a str
+#[derive(Debug)]
+pub struct TextDiagnostic {
+    text: String,
+    location: Location
+}
+
+impl TextDiagnostic {
+    pub fn new(text: String, location: Location) -> Self {
+        TextDiagnostic { text, location }
+    }
 }
 
 impl Diagnostic for TextDiagnostic {
     fn text(&self) -> String {
-        self.
+        self.text.clone()
     }
+
+    fn location(&self) -> Location {
+        self.location
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum Location {
+    Offset(TextUnit),
+    Range(TextRange),
 }

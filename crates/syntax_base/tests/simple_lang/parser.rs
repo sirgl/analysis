@@ -1,8 +1,14 @@
-use crate::simple_lang::*;
 use syntax_base::syntax_kind::SyntaxKindId;
 use syntax_base::parser::parser_api::ParserApi;
+use crate::simple_lang::syntax::*;
+use syntax_base::parser::parser_impl::sink::ParseEventSink;
 
-fn parse_file(p: &mut ParserApi) {
+pub fn parse_file<T, S: ParseEventSink<T>>(mut p: ParserApi, sink: S) -> T {
+    parse_file_internal(&mut p);
+    p.build(sink)
+}
+
+fn parse_file_internal(p: &mut ParserApi) {
     let mut file = p.start();
     while p.at(SyntaxKindId::END) {
         if !p.at(FUN_KW) {

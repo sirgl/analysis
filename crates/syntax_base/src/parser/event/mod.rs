@@ -1,6 +1,7 @@
 use crate::syntax_kind::SyntaxKindId;
+use errors::TextDiagnostic;
 
-mod tree_builder;
+pub mod tree_builder;
 
 
 
@@ -20,6 +21,6 @@ pub enum ParseEvent {
         token_type: SyntaxKindId
     },
     Error {
-        msg: String
+        diagnostic: TextDiagnostic
     }
 }

@@ -7,6 +7,7 @@ use std::fmt::Error;
 use smol_str::SmolStr;
 use crate::syntax::SyntaxDefinition;
 use crate::escape_str;
+use rowan::Types;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct TokenInfo {
@@ -41,7 +42,6 @@ impl<'a> FixedToken<'a> {
 
 impl <'a>fmt::Display for FixedToken<'a> {
     fn fmt<'b>(&self, f: &mut Formatter<'b>) -> Result<(), Error> {
-        // TODO token_type
         let name = self.def._syntax_kind_info(self.token_type).name;
         write!(f, "{}{}@{}", name, self.range, escape_str(self.text.as_str()))
     }

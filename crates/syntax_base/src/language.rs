@@ -1,4 +1,5 @@
 use crate::syntax::SyntaxDefinition;
+use rowan::Types;
 
 
 // TODO is it really required to be in this module?
@@ -24,6 +25,6 @@ pub struct LanguageId(u16);
 
 
 pub trait LanguageCapabilities {
-    fn syntax_definition() -> Option<Box<dyn SyntaxDefinition>>;
+    fn syntax_definition<T: Types>() -> Option<Box<dyn SyntaxDefinition>>;
     // TODO formatter, inspections, code completion and so on
 }

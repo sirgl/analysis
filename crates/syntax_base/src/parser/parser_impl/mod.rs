@@ -3,6 +3,10 @@ pub mod sink;
 use crate::tokens::TokenInfo;
 use crate::parser::event::ParseEvent;
 use crate::syntax_kind::SyntaxKindId;
+use crate::parser::parser_impl::sink::ParseEventSink;
+use crate::parser::event::tree_builder::TreeBuilder;
+use crate::parser::parser_impl::sink::GreenTreeEventSink;
+use errors::TextDiagnostic;
 
 pub(crate) struct ParserImpl<'a> {
     events: Vec<ParseEvent>,
@@ -12,8 +16,8 @@ pub(crate) struct ParserImpl<'a> {
 
 
 impl<'a> ParserImpl<'a> {
-    pub fn new(events: Vec<ParseEvent>, input: ParserInput<'a>, text: &'a str, position: u32) -> Self {
-        ParserImpl { events, input, position }
+    pub fn new(tokens: Vec<TokenInfo>, text: &'a str) -> Self {
+        ParserImpl { events: vec![], input: ParserInput { text, tokens }, position: 0 }
     }
 
     pub fn into_events(self) -> Vec<ParseEvent> {
@@ -32,8 +36,8 @@ impl<'a> ParserImpl<'a> {
         self.event(ParseEvent::Finish {});
     }
 
-    pub fn error(&mut self, msg: String) {
-        self.event(ParseEvent::Error { msg });
+    pub fn error(&mut self, error: TextDiagnostic) {
+        self.event(ParseEvent::Error { diagnostic: error });
     }
 
     /// nth element's type from current position of parser
@@ -53,7 +57,14 @@ impl<'a> ParserImpl<'a> {
     fn event(&mut self, event: ParseEvent) {
         self.events.push(event)
     }
+
+    pub fn build<T, S: ParseEventSink<T>>(mut self, sink: S) -> T {
+        let builder: TreeBuilder<T, S> = TreeBuilder::new(sink, &self.input.tokens, &mut self.events, self.input.text);
+        builder.build().finish()
+    }
 }
+
+pub struct Tree {}
 
 pub struct ParserInput<'a> {
     tokens: Vec<TokenInfo>,

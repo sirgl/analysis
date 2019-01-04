@@ -7,29 +7,27 @@ use text_unit::TextUnit;
 use std::mem;
 use crate::syntax_kind::SyntaxKindId;
 
-pub(crate) struct TreeBuilder <'a, S : ParseEventSink> {
+pub struct TreeBuilder <'a, T, S : ParseEventSink<T>> {
     sink: S,
     tokens: &'a [TokenInfo],
     events: &'a mut [ParseEvent],
     text: &'a str,
     token_pos: usize,
-    text_pos: TextUnit
+    text_pos: TextUnit,
+    tree_marker: std::marker::PhantomData<T>,
 }
 
-impl<'a, S: ParseEventSink> TreeBuilder<'a, S> {
+impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
     pub fn new(
         sink: S,
         tokens: &'a [TokenInfo],
         events: &'a mut [ParseEvent],
         text: &'a str,
-        token_pos: usize, // is it required?
     ) -> Self {
-        TreeBuilder { sink, tokens, events, text, token_pos, text_pos: TextUnit::from(0) }
+        TreeBuilder { sink, tokens, events, text, token_pos: 0, text_pos: TextUnit::from(0), tree_marker: std::marker::PhantomData {} }
     }
-}
 
-impl <'a, S : ParseEventSink>TreeBuilder<'a, S> {
-    fn build(mut self) -> S {
+    pub fn build(mut self) -> S {
 
         for i in 0..self.events.len() {
             let token = &self.tokens[i]; // TODO token position?
@@ -47,8 +45,8 @@ impl <'a, S : ParseEventSink>TreeBuilder<'a, S> {
                 ParseEvent::Token { token_type } => {
                     self.leaf(token_type, token.len)
                 }
-                ParseEvent::Error { msg } => {
-                    self.sink.error(msg)
+                ParseEvent::Error { diagnostic } => {
+                    self.sink.error(diagnostic)
                 }
             }
             self.text_pos += token.len;
@@ -57,8 +55,8 @@ impl <'a, S : ParseEventSink>TreeBuilder<'a, S> {
         self.sink
     }
 
-    fn finish(&mut self) -> S::Tree {
-        self.sink.finish()
+    fn finish(&mut self) {
+        self.sink.finish_internal()
     }
 
     fn leaf(&mut self, token_type: SyntaxKindId, token_len: TextUnit) {
@@ -67,8 +65,8 @@ impl <'a, S : ParseEventSink>TreeBuilder<'a, S> {
         self.sink.leaf(token_type, token_text);
     }
 
-    fn error() {
-
+    fn error(&mut self) {
+        unimplemented!()
     }
 
 //    fn text()

@@ -2,11 +2,17 @@ use crate::parser::parser_impl::ParserImpl;
 use drop_bomb::DropBomb;
 use crate::syntax_kind::SyntaxKindId;
 use crate::syntax_kind_set::SyntaxKindSet;
+use crate::tokens::TokenInfo;
+use crate::parser::parser_impl::sink::ParseEventSink;
+use crate::parser::event::tree_builder::TreeBuilder;
 
 
 pub struct ParserApi<'a>(ParserImpl<'a>);
 
 impl <'a> ParserApi<'a> {
+    pub fn new(tokens: Vec<TokenInfo>, text: &'a str) -> Self {
+        ParserApi(ParserImpl::new(tokens, text))
+    }
     // TODO create?
 
     /// Increments position in token stream
@@ -24,7 +30,8 @@ impl <'a> ParserApi<'a> {
     }
 
     pub fn error<T: Into<String>>(&mut self, message: T) {
-        self.0.error(message.into())
+        unimplemented!()
+//        self.0.error(message.into())
     }
 
     /// Consume the next token if it is `kind`.
@@ -43,6 +50,10 @@ impl <'a> ParserApi<'a> {
 
     pub fn leaf(&mut self, token_type: SyntaxKindId) {
         self.0.leaf(token_type)
+    }
+
+    pub fn build<T, S: ParseEventSink<T>>(self, sink: S) -> T {
+        self.0.build(sink)
     }
 }
 
