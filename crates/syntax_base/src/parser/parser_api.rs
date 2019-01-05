@@ -13,8 +13,8 @@ impl <'a> ParserApi<'a> {
     pub fn new(tokens: Vec<TokenInfo>, text: &'a str) -> Self {
         ParserApi(ParserImpl::new(tokens, text))
     }
-    // TODO create?
 
+    // TODO bump must skip whitespaces and other trivias
     /// Increments position in token stream
     pub fn bump(&mut self) {
         self.0.bump();

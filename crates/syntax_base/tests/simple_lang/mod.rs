@@ -17,10 +17,10 @@ use crate::simple_lang::parser::parse_file;
 use syntax_base::parser::parser_api::ParserApi;
 use errors::TextDiagnostic;
 use syntax_base::parser::parser_impl::sink::GreenTreeEventSink;
-use rowan::GreenNode;
-use rowan::Types;
-use rowan::SyntaxNode;
-use syntax_base::nodes::PlatformTypes;
+use syntax_base::nodes::syntax::PlatformRootData;
+use syntax_base::nodes::syntax::SyntaxNode;
+use syntax_base::nodes::syntax::PlatformTypes;
+use syntax_base::nodes::syntax::GreenNode;
 
 
 pub struct SimpleLangSyntax {}
@@ -52,15 +52,12 @@ impl SyntaxDefinition for SimpleLangSyntax {
 }
 
 
-
 struct SimpleParser {}
 
 impl Parser for SimpleParser {
-    fn parse(&self, text: &str, tokens: Vec<TokenInfo>) -> GreenNode<PlatformTypes> {
+    fn parse(&self, text: &str, tokens: Vec<TokenInfo>) -> SyntaxNode {
         let mut api = ParserApi::new(tokens, text);
-        let file: GreenNode<PlatformTypes> = parse_file(api, GreenTreeEventSink::new());
-//        let node = SyntaxNode::new(file, Vec::new());
-//        let i = node.kind().id
-        file
+        let file: GreenNode = parse_file(api, GreenTreeEventSink::new());
+        SyntaxNode(rowan::SyntaxNode::new(file,  PlatformRootData::new() ))
     }
 }

@@ -1,12 +1,13 @@
 use rowan::TreeRoot;
 use rowan::OwnedRoot;
-use syntax_base::nodes::PlatformTypes;
-use syntax_base::nodes::SyntaxNode;
-use syntax_base::nodes::BaseSyntaxNode;
-use syntax_base::nodes::LanguageNodeSet;
-use syntax_base::nodes::SyntaxNodeRef;
+
 use rowan::RefRoot;
 use crate::simple_lang::syntax::*;
+use syntax_base::nodes::syntax::PlatformTypes;
+use syntax_base::nodes::syntax::SyntaxNode;
+use syntax_base::nodes::syntax::BaseSyntaxNode;
+use syntax_base::nodes::syntax::LanguageNodeSet;
+use syntax_base::nodes::syntax::SyntaxNodeRef;
 
 pub struct FunNode<R: TreeRoot<PlatformTypes> = OwnedRoot<PlatformTypes>> {
     pub syntax: SyntaxNode<R>,

@@ -10,3 +10,4 @@ text_unit = "0.1.5"
 drop_bomb = "0.1.4"
 smol_str = "0.1.8"
 errors = { path = "../errors" }
+itertools = "0.8.0"

@@ -8,7 +8,6 @@ use syntax_base::lexer::Lexer;
 use syntax_base::parser::Parser;
 use syntax_base::syntax::SyntaxDefinition;
 use syntax_base::tokens::convert_to_fixed;
-use rowan::Types;
 use syntax_base::tokens::FixedToken;
 
 /// rewrite content of test file with actual data
@@ -122,15 +121,15 @@ impl<'a> ParserTest<'a> {
                 let lexer = self.lexer;
                 let tokens = lexer.tokenize(program);
                 let node = self.parser.parse(program, tokens);
-                let x = node.kind();
-//                format!("{}", node)
+//                let id = node.get_type_id();
+//                print!("{?:}", id);
                 "".to_string() // TODO
             });
     }
 }
 
-//pub fn dump_tree() -> String {
+//pub fn dump_tree(node: SyntaxNodeRef) -> String {
 //    let buffer = String::new();
 //    buffer.
-//
+
 //}
