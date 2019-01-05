@@ -1,7 +1,5 @@
 use errors::TextDiagnostic;
 use rowan::TreeRoot;
-use rowan::OwnedRoot;
-use rowan::RefRoot;
 use crate::language::LanguageId;
 use crate::syntax_kind_set::IterableSyntaxKindSet;
 use crate::syntax_kind::SyntaxKind;
@@ -18,14 +16,21 @@ pub struct PlatformRootData {
     errors: Vec<TextDiagnostic>
 }
 
-pub struct SyntaxNode<R: TreeRoot<PlatformTypes> = OwnedRoot<PlatformTypes>>(pub(crate) ::rowan::SyntaxNode<PlatformTypes, R>);
-pub type SyntaxNodeRef<'a> = SyntaxNode<RefRoot<'a, PlatformTypes>>;
+pub type OwnedRoot = ::rowan::OwnedRoot<PlatformTypes>;
+
+pub type RefRoot<'a> = ::rowan::RefRoot<'a, PlatformTypes>;
+
+
+pub struct SyntaxNode<R: TreeRoot<PlatformTypes>>(
+    pub rowan::SyntaxNode<PlatformTypes, R>
+);
+pub type SyntaxNodeRef<'a> = SyntaxNode<RefRoot<'a>>;
 
 /// Base syntax node in platform
-trait BaseSyntaxNode<'a> : LanguageNodeSet<'a> {}
+pub trait BaseSyntaxNode<'a> : LanguageNodeSet<'a> {}
 
 /// Any trait, that related to some node kinds should implement this
-trait LanguageNodeSet<'a> {
+pub trait LanguageNodeSet<'a> {
     fn cast(syntax: SyntaxNodeRef<'a>) -> Option<Self>
         where
             Self: Sized;

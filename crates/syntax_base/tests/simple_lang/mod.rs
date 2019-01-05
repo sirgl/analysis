@@ -3,6 +3,7 @@ extern crate test;
 mod lexer;
 mod parser;
 mod syntax;
+mod descriptions;
 
 use syntax_base::syntax_kind::*;
 use syntax_base::syntax::SyntaxDefinition;

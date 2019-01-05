@@ -13,12 +13,17 @@ object SimpleDescription : SyntaxDescription {
             TextLeaf("/", "div"),
             TextLeaf("=", "eq"),
             TextLeaf(";", "semi"),
+            KeywordLeaf("print", "print"),
             KeywordLeaf("fun", "fun"),
             RuleLeafNode("id"),
             RuleLeafNode("num"),
             RuleLeafNode("whitespace"),
+            BranchNode("block"),
             BranchNode("args"),
-            BranchNode("function")
+            BranchNode("function"),
+            BranchNode("assign_stmt"),
+            BranchNode("print_stmt"),
+            BranchNode("bin_expr")
     )
 }
 

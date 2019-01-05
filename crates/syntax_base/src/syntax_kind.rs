@@ -5,13 +5,13 @@ use crate::syntax_kind_set::SyntaxKindSet;
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct SyntaxKind {
     /// TODO it is pretty bad, that purely syntax crate depends on language
-    language_id: LanguageId,
-    syntax_kind_id: SyntaxKindId,
+    pub language_id: LanguageId,
+    pub syntax_kind_id: SyntaxKindId,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct SyntaxKindId {
-    pub(crate) id: u16
+    pub id: u16
 }
 
 impl SyntaxKindId {

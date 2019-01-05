@@ -45,7 +45,7 @@ private fun StringBuilder.generateNodes(nodes: List<SyntaxNode>, currentIndex: I
 
 private fun StringBuilder.generateInfo(nodes: List<SyntaxNode>) {
     append("""
-fn infos(id: SyntaxKindId) -> &'static SyntaxInfo  {
+pub fn infos(id: SyntaxKindId) -> &'static SyntaxInfo  {
     match id {
 ${
             buildString {
@@ -53,7 +53,8 @@ ${
                         append("        ${node.name.toUpperCase()} => &SyntaxInfo { name: \"${node.name.toUpperCase()}\" },\n")
                     }
                 }
-        }       }
+        }_ => panic!("Bad syntax id")
+               }
     }
     """.trimIndent())
 }

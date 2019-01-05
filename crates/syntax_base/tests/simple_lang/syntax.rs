@@ -14,13 +14,17 @@ pub const MUL: SyntaxKindId = SyntaxKindId::new(12);
 pub const DIV: SyntaxKindId = SyntaxKindId::new(13);
 pub const EQ: SyntaxKindId = SyntaxKindId::new(14);
 pub const SEMI: SyntaxKindId = SyntaxKindId::new(15);
-pub const FUN_KW: SyntaxKindId = SyntaxKindId::new(16);
-pub const ID: SyntaxKindId = SyntaxKindId::new(17);
-pub const NUM: SyntaxKindId = SyntaxKindId::new(18);
-pub const WHITESPACE: SyntaxKindId = SyntaxKindId::new(19);
-pub const ARGS: SyntaxKindId = SyntaxKindId::new(20);
-pub const FUNCTION: SyntaxKindId = SyntaxKindId::new(21);
-
+pub const PRINT_KW: SyntaxKindId = SyntaxKindId::new(16);
+pub const FUN_KW: SyntaxKindId = SyntaxKindId::new(17);
+pub const ID: SyntaxKindId = SyntaxKindId::new(18);
+pub const NUM: SyntaxKindId = SyntaxKindId::new(19);
+pub const WHITESPACE: SyntaxKindId = SyntaxKindId::new(20);
+pub const BLOCK: SyntaxKindId = SyntaxKindId::new(21);
+pub const ARGS: SyntaxKindId = SyntaxKindId::new(22);
+pub const FUNCTION: SyntaxKindId = SyntaxKindId::new(23);
+pub const ASSIGN_STMT: SyntaxKindId = SyntaxKindId::new(24);
+pub const PRINT_STMT: SyntaxKindId = SyntaxKindId::new(25);
+pub const BIN_EXPR: SyntaxKindId = SyntaxKindId::new(26);
 
 pub fn infos(id: SyntaxKindId) -> &'static SyntaxInfo  {
     match id {
@@ -35,12 +39,17 @@ pub fn infos(id: SyntaxKindId) -> &'static SyntaxInfo  {
         DIV => &SyntaxInfo { name: "DIV" },
         EQ => &SyntaxInfo { name: "EQ" },
         SEMI => &SyntaxInfo { name: "SEMI" },
+        PRINT_KW => &SyntaxInfo { name: "PRINT_KW" },
         FUN_KW => &SyntaxInfo { name: "FUN_KW" },
         ID => &SyntaxInfo { name: "ID" },
         NUM => &SyntaxInfo { name: "NUM" },
         WHITESPACE => &SyntaxInfo { name: "WHITESPACE" },
+        BLOCK => &SyntaxInfo { name: "BLOCK" },
         ARGS => &SyntaxInfo { name: "ARGS" },
         FUNCTION => &SyntaxInfo { name: "FUNCTION" },
+        ASSIGN_STMT => &SyntaxInfo { name: "ASSIGN_STMT" },
+        PRINT_STMT => &SyntaxInfo { name: "PRINT_STMT" },
+        BIN_EXPR => &SyntaxInfo { name: "BIN_EXPR" },
         _ => panic!("Bad syntax id")
     }
 }
