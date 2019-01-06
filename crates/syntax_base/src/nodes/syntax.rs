@@ -7,6 +7,10 @@ use errors::TextDiagnostic;
 use crate::syntax_kind::SyntaxKind;
 use text_unit::TextRange;
 use crate::nodes::syntax_text::SyntaxText;
+use core::fmt;
+use std::fmt::Formatter;
+use std::fmt::Error;
+use crate::syntax::SyntaxDefinition;
 
 pub struct PlatformTypes {}
 
@@ -32,7 +36,7 @@ pub type RefRoot<'a> = ::rowan::RefRoot<'a, PlatformTypes>;
 
 pub type GreenNode = ::rowan::GreenNode<PlatformTypes>;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct SyntaxNode<R: TreeRoot<PlatformTypes> = OwnedRoot>(
     pub rowan::SyntaxNode<PlatformTypes, R>
 );
@@ -44,7 +48,7 @@ pub enum Direction {
     Prev,
 }
 
-impl<'a> SyntaxNodeRef<'a> {
+impl<'a> SyntaxNode<RefRoot<'a>> {
     pub fn leaf_text(self) -> Option<&'a SmolStr> {
         self.0.leaf_text()
     }
@@ -53,6 +57,7 @@ impl<'a> SyntaxNodeRef<'a> {
         crate::nodes::algo::generate(Some(self), |&node| node.parent())
     }
 
+    /// Emits descendants in preorder
     pub fn descendants(self) -> impl Iterator<Item = SyntaxNodeRef<'a>> {
         self.preorder().filter_map(|event| match event {
             WalkEvent::Enter(node) => Some(node),
@@ -67,7 +72,7 @@ impl<'a> SyntaxNodeRef<'a> {
         })
     }
 
-    pub fn preorder(self) -> impl Iterator<Item = WalkEvent<SyntaxNodeRef<'a>>> {
+    pub fn preorder(self) -> impl Iterator<Item = WalkEvent<SyntaxNode<RefRoot<'a>>>> {
         self.0.preorder().map(|event| match event {
             WalkEvent::Enter(n) => WalkEvent::Enter(SyntaxNode(n)),
             WalkEvent::Leave(n) => WalkEvent::Leave(SyntaxNode(n)),
@@ -76,11 +81,11 @@ impl<'a> SyntaxNodeRef<'a> {
 }
 
 impl<R: TreeRoot<PlatformTypes>> SyntaxNode<R> {
-    pub(crate) fn root_data(&self) -> &Vec<TextDiagnostic> {
+    pub fn root_data(&self) -> &Vec<TextDiagnostic> {
         &self.0.root_data().errors
     }
     // TODO probably bad to replace with green node!
-    pub(crate) fn replace_with(&self, replacement: GreenNode) -> GreenNode {
+    pub fn replace_with(&self, replacement: GreenNode) -> GreenNode {
         self.0.replace_with(replacement)
     }
     pub fn borrowed<'a>(&'a self) -> SyntaxNode<RefRoot<'a>> {
@@ -119,6 +124,15 @@ impl<R: TreeRoot<PlatformTypes>> SyntaxNode<R> {
     pub fn children(&self) -> SyntaxNodeChildren<R> {
         SyntaxNodeChildren(self.0.children())
     }
+
+    pub fn debug_text(&self, def: &SyntaxDefinition) -> String {
+        let mut buf = String::new();
+        let name = def._syntax_kind_info(self.kind().syntax_kind_id).name;
+        buf.push_str(name);
+        buf.push_str("@");
+        buf.push_str(self.text().to_string().as_str());
+        buf
+    }
 }
 
 pub struct SyntaxNodeChildren<R: TreeRoot<PlatformTypes>>(::rowan::SyntaxNodeChildren<PlatformTypes, R>);
@@ -140,4 +154,10 @@ pub trait LanguageNodeSet<'a> {
 pub struct LanguageNodeSetDescriptor {
     pub language_id: LanguageId,
     pub implementor_kinds: IterableSyntaxKindSet
+}
+
+impl<R: TreeRoot<PlatformTypes>> fmt::Debug for SyntaxNode<R> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{}@{}", self.kind().syntax_kind_id.id, self.text())
+    }
 }

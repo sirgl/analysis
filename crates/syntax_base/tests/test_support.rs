@@ -3,12 +3,17 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
+use std::fmt::Write;
 
 use syntax_base::lexer::Lexer;
 use syntax_base::parser::Parser;
 use syntax_base::syntax::SyntaxDefinition;
 use syntax_base::tokens::convert_to_fixed;
 use syntax_base::tokens::FixedToken;
+use syntax_base::nodes::syntax::SyntaxNodeRef;
+use rowan::WalkEvent;
+use syntax_base::nodes::syntax::SyntaxNode;
+use syntax_base::nodes::syntax::RefRoot;
 
 /// rewrite content of test file with actual data
 const REWRITE: bool = false;
@@ -112,7 +117,13 @@ pub struct ParserTest<'a> {
 }
 
 impl<'a> ParserTest<'a> {
-    fn test(&self, file_name: &str) {
+    pub fn new(syntax_def: &'a SyntaxDefinition, lexer: &'a Lexer, parser: &'a Parser, extension: String, base_path: PathBuf) -> Self {
+        ParserTest { syntax_def, lexer, parser, extension, base_path }
+    }
+}
+
+impl<'a> ParserTest<'a> {
+    pub fn test(&self, file_name: &str) {
         test_by_file_rel_ext(
             self.base_path.as_path(),
             self.extension.clone(),
@@ -121,15 +132,36 @@ impl<'a> ParserTest<'a> {
                 let lexer = self.lexer;
                 let tokens = lexer.tokenize(program);
                 let node = self.parser.parse(program, tokens);
-//                let id = node.get_type_id();
-//                print!("{?:}", id);
-                "".to_string() // TODO
+                dump_tree(node.borrowed(), self.syntax_def)
             });
     }
 }
 
-//pub fn dump_tree(node: SyntaxNodeRef) -> String {
-//    let buffer = String::new();
-//    buffer.
+pub fn dump_tree(node: SyntaxNodeRef, def: &SyntaxDefinition) -> String {
+    let mut buffer = String::new();
+    for diagnostic in node.root_data() {
+        buffer.push_str(format!("{:?}", diagnostic).as_str());
+        buffer.push('\n')
+    }
+    let mut level = 0;
+    for event in node.preorder() {
+        let event: WalkEvent<SyntaxNode<RefRoot>> = event;
+        indent(&mut buffer, level);
+        match event {
+            WalkEvent::Enter(node) => {
+                write!(buffer, "{:?}", node.debug_text(def));
+                level += 1;
+            },
+            WalkEvent::Leave(_) => {
+                level -= 1;
+            },
+        }
+    }
+    buffer
+}
 
-//}
+fn indent(sb: &mut String, level: usize) {
+    for _ in 0..level {
+        sb.push_str("  ");
+    }
+}

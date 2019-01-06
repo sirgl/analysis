@@ -7,17 +7,19 @@ use crate::parser::parser_impl::sink::ParseEventSink;
 use crate::parser::event::tree_builder::TreeBuilder;
 use crate::parser::parser_impl::sink::GreenTreeEventSink;
 use errors::TextDiagnostic;
+use crate::language::LanguageId;
 
 pub(crate) struct ParserImpl<'a> {
     events: Vec<ParseEvent>,
     input: ParserInput<'a>,
     position: u32,
+    language_id: LanguageId
 }
 
 
 impl<'a> ParserImpl<'a> {
-    pub fn new(tokens: Vec<TokenInfo>, text: &'a str) -> Self {
-        ParserImpl { events: vec![], input: ParserInput { text, tokens }, position: 0 }
+    pub fn new(tokens: Vec<TokenInfo>, text: &'a str, language_id: LanguageId) -> Self {
+        ParserImpl { events: vec![], input: ParserInput { text, tokens }, position: 0, language_id }
     }
 
     pub fn into_events(self) -> Vec<ParseEvent> {
@@ -59,7 +61,13 @@ impl<'a> ParserImpl<'a> {
     }
 
     pub fn build<T, S: ParseEventSink<T>>(mut self, sink: S) -> T {
-        let builder: TreeBuilder<T, S> = TreeBuilder::new(sink, &self.input.tokens, &mut self.events, self.input.text);
+        let builder: TreeBuilder<T, S> = TreeBuilder::new(
+            sink,
+            &self.input.tokens,
+            &mut self.events,
+            self.input.text,
+            self.language_id
+        );
         builder.build().finish()
     }
 }

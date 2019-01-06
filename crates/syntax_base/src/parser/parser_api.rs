@@ -5,13 +5,14 @@ use crate::syntax_kind_set::SyntaxKindSet;
 use crate::tokens::TokenInfo;
 use crate::parser::parser_impl::sink::ParseEventSink;
 use crate::parser::event::tree_builder::TreeBuilder;
+use crate::language::LanguageId;
 
 
-pub struct ParserApi<'a>(ParserImpl<'a>);
+pub struct ParserApi<'a>(pub(crate) ParserImpl<'a>);
 
 impl <'a> ParserApi<'a> {
-    pub fn new(tokens: Vec<TokenInfo>, text: &'a str) -> Self {
-        ParserApi(ParserImpl::new(tokens, text))
+    pub fn new(tokens: Vec<TokenInfo>, text: &'a str, language_id: LanguageId) -> Self {
+        ParserApi(ParserImpl::new(tokens, text, language_id))
     }
 
     // TODO bump must skip whitespaces and other trivias
@@ -71,6 +72,7 @@ impl Marker {
 impl Marker {
     pub fn complete(&mut self, p: &mut ParserApi, syntax_kind: SyntaxKindId) -> CompletedMarker {
         self.bomb.defuse();
+        p.0.finish();
         CompletedMarker::new(self.position, syntax_kind)
     }
 

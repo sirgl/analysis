@@ -9,6 +9,12 @@ pub struct SyntaxKind {
     pub syntax_kind_id: SyntaxKindId,
 }
 
+impl SyntaxKind {
+    pub fn new(language_id: LanguageId, syntax_kind_id: SyntaxKindId) -> Self {
+        SyntaxKind { language_id, syntax_kind_id }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct SyntaxKindId {
     pub id: u16

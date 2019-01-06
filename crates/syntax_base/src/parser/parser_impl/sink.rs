@@ -5,10 +5,12 @@ use rowan::GreenNodeBuilder;
 use rowan::Types;
 use errors::TextDiagnostic;
 use rowan::GreenNode;
+use crate::nodes::syntax::PlatformTypes;
+use crate::syntax_kind::SyntaxKind;
 
 pub trait ParseEventSink<T> {
-    fn leaf(&mut self, kind: SyntaxKindId, text: SmolStr);
-    fn start_internal(&mut self, kind: SyntaxKindId);
+    fn leaf(&mut self, kind: SyntaxKind, text: SmolStr);
+    fn start_internal(&mut self, kind: SyntaxKind);
     fn finish_internal(&mut self);
     fn error(&mut self, error: TextDiagnostic);
     fn finish(self) -> T;
@@ -25,26 +27,24 @@ impl<TY: Types> GreenTreeEventSink<TY> {
     }
 }
 
-impl <T: Types> ParseEventSink<GreenNode<T>> for GreenTreeEventSink<T> {
-    fn leaf(&mut self, kind: SyntaxKindId, text: SmolStr) {
-//        self.inner.
-        unimplemented!()
+impl ParseEventSink<GreenNode<PlatformTypes>> for GreenTreeEventSink<PlatformTypes> {
+    fn leaf(&mut self, kind: SyntaxKind, text: SmolStr) {
+        self.inner.leaf(kind, text);
     }
 
-    fn start_internal(&mut self, kind: SyntaxKindId) {
-//        self.inner.start_internal(kind)
-        unimplemented!()
+    fn start_internal(&mut self, kind: SyntaxKind) {
+        self.inner.start_internal(kind);
     }
 
     fn finish_internal(&mut self) {
-        unimplemented!()
+        self.inner.finish_internal();
     }
 
     fn error(&mut self, error_message: TextDiagnostic) {
-        unimplemented!()
+        self.errors.push(error_message);
     }
 
-    fn finish(self) -> GreenNode<T> {
+    fn finish(self) -> GreenNode<PlatformTypes> {
         self.inner.finish()
     }
 }

@@ -1,7 +1,6 @@
 use crate::lexer::Lexer;
 use crate::syntax_kind::SyntaxKindId;
 use crate::parser::Parser;
-use rowan::Types;
 
 pub struct SyntaxInfo {
     pub name: &'static str

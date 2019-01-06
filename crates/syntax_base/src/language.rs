@@ -21,7 +21,7 @@ impl Language {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct LanguageId(u16);
+pub struct LanguageId(pub u16);
 
 
 pub trait LanguageCapabilities {

@@ -43,3 +43,33 @@ fn parse_args(p: &mut ParserApi) {
     }
     args.complete(p, ARGS);
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::simple_lang::SimpleLangSyntax;
+    use syntax_base::syntax::SyntaxDefinition;
+    use std::path::PathBuf;
+    use crate::test_support::ParserTest;
+
+    #[test]
+    fn test1() {
+        by_file("1")
+    }
+
+    const EXT: &str = "simple";
+    const BASE_PATH: &str = "./tests/data/simple/parser";
+
+    fn by_file(name: &str) {
+        let syntax = SimpleLangSyntax {};
+        let lexer = syntax.lexer().unwrap();
+        let parser = syntax.parser().unwrap();
+        let test = ParserTest::new(
+            &syntax,
+            lexer.as_ref(),
+            parser.as_ref(),
+            EXT.to_string(),
+            PathBuf::from(BASE_PATH)
+        );
+        test.test(name);
+    }
+}
