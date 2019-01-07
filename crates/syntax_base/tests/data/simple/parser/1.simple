@@ -1,3 +1,1 @@
-fun foo(a, b) {
-    c = a + b;
-}
+fun foo(a,b){c=a+b;}

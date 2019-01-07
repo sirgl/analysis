@@ -34,11 +34,19 @@ impl<'a> ParserImpl<'a> {
     }
 
     /// Finish internal node
-    pub fn finish(&mut self) {
+    pub fn finish(&mut self, pos: u32, kind: SyntaxKindId) {
+        match self.events[pos as usize] {
+            ParseEvent::Start {
+                kind: ref mut slot, ..
+            } => {
+                *slot = kind;
+            }
+            _ => unreachable!(),
+        }
         self.event(ParseEvent::Finish {});
     }
 
-    pub fn error(&mut self, error: TextDiagnostic) {
+    pub fn error(&mut self, error: String) {
         self.event(ParseEvent::Error { diagnostic: error });
     }
 
@@ -87,8 +95,4 @@ impl<'a> ParserInput<'a> {
             self.tokens[position as usize].token_type
         }
     }
-
-//    fn text(&self, position: u32) -> SmolStr {
-//
-//    }
 }

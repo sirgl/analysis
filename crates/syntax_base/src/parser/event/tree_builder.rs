@@ -8,6 +8,8 @@ use std::mem;
 use crate::syntax_kind::SyntaxKindId;
 use crate::language::LanguageId;
 use crate::syntax_kind::SyntaxKind;
+use errors::TextDiagnostic;
+use errors::Location;
 
 pub struct TreeBuilder <'a, T, S : ParseEventSink<T>> {
     sink: S,
@@ -35,8 +37,12 @@ impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
 impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
 
     pub fn build(mut self) -> S {
+        for e in self.events.iter() {
+            eprintln!("e = {:?}", e);
+        }
+        let mut token_pos = 0;
         for i in 0..self.events.len() {
-            let token = &self.tokens[i]; // TODO token position?
+//            let token = &self.tokens[i]; // TODO token position?
             match mem::replace(&mut self.events[i], tombstone()) {
                 ParseEvent::Start { kind, forward_parent } => {
                     if forward_parent.is_none() {
@@ -46,17 +52,22 @@ impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
                     }
                 }
                 ParseEvent::Finish => {
+                    eprintln!("finish");
                     self.finish();
                 }
                 ParseEvent::Token { token_type } => {
-                    self.leaf(token_type, token.len)
+                    let token = &self.tokens[token_pos];
+                    self.leaf(token_type, token.len);
+                    token_pos += 1;
+                    self.text_pos += token.len;
                 }
                 ParseEvent::Error { diagnostic } => {
-                    self.sink.error(diagnostic)
+                    self.sink.error(TextDiagnostic::new(
+                        diagnostic,
+                        Location::Offset(self.text_pos)
+                    ))
                 }
             }
-            self.text_pos += token.len;
-            self.token_pos += 1;
         }
         self.sink
     }
@@ -68,11 +79,9 @@ impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
     fn leaf(&mut self, token_type: SyntaxKindId, token_len: TextUnit) {
         let range = TextRange::offset_len(self.text_pos, token_len);
         let token_text: SmolStr = self.text[range].into();
+        eprintln!("range = {:?}", range);
+        eprintln!("token_text = {:?}", token_text);
         self.sink.leaf(SyntaxKind::new(self.language_id, token_type), token_text);
-    }
-
-    fn error(&mut self) {
-        unimplemented!()
     }
 
 //    fn text()

@@ -1,0 +1,13 @@
+ROOT@fun foo(a,b
+  FUNCTION@fun foo(a,
+    ERROR@fun
+      WHITESPACE@fun
+    ARGS@ foo(a,
+      LPAR@ 
+      LPAR@
+      ID@foo
+      COMMA@(
+      ID@a
+      RPAR@,
+  ERROR@b
+    LBRACE@b

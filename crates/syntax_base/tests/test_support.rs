@@ -146,11 +146,11 @@ pub fn dump_tree(node: SyntaxNodeRef, def: &SyntaxDefinition) -> String {
     let mut level = 0;
     for event in node.preorder() {
         let event: WalkEvent<SyntaxNode<RefRoot>> = event;
-        indent(&mut buffer, level);
         match event {
             WalkEvent::Enter(node) => {
-                write!(buffer, "{:?}", node.debug_text(def));
+                indent(&mut buffer, level);
                 level += 1;
+                writeln!(buffer, "{}", node.debug_text(def));
             },
             WalkEvent::Leave(_) => {
                 level -= 1;

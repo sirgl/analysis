@@ -21,6 +21,6 @@ pub enum ParseEvent {
         token_type: SyntaxKindId
     },
     Error {
-        diagnostic: TextDiagnostic
+        diagnostic: String
     }
 }
