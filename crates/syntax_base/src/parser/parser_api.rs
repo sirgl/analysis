@@ -5,6 +5,26 @@ use crate::syntax_kind_set::SyntaxKindSet;
 use crate::tokens::TokenInfo;
 use crate::parser::parser_impl::sink::ParseEventSink;
 use crate::language::LanguageId;
+use std::ops::Range;
+use crate::parser::parser_impl::ParserInput;
+
+
+pub struct TriviaContext<'a> {
+    trivia_borders: Range<u32>,
+    current_index: u32,
+    input: ParserInput<'a>
+}
+
+
+pub trait TriviaHandler {
+    fn is_trivia(&self, kind: SyntaxKindId);
+
+    fn select_token_trivia(&self, context: &TriviaContext) -> Range<u32>;
+
+    fn select_start_node_trivia(&self, context: &TriviaContext) -> u32;
+
+    fn select_end_node_trivia(&self, context: &TriviaContext) -> u32;
+}
 
 
 pub struct ParserApi<'a>(ParserImpl<'a>);
@@ -14,7 +34,7 @@ impl <'a> ParserApi<'a> {
         ParserApi(ParserImpl::new(tokens, text, language_id))
     }
 
-    // TODO bump must skip whitespaces and other trivias
+    // TODO must not expose bump!
     /// Increments position in token stream
     pub fn bump(&mut self) {
         self.0.bump();

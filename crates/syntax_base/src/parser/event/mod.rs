@@ -18,7 +18,8 @@ pub enum ParseEvent {
     Finish,
     /// Produce leaf node with single token inside
     Token {
-        token_type: SyntaxKindId
+        token_type: SyntaxKindId,
+        is_trivia: bool,
     },
     Error {
         diagnostic: String

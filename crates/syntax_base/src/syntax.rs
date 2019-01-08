@@ -20,6 +20,8 @@ pub trait SyntaxDefinition {
     fn _syntax_kind_info(&self, id: SyntaxKindId) -> &SyntaxInfo;
 
     fn id_by_syntax_kind_name(&self, name: &str) -> Option<SyntaxKindId>;
+
+    fn is_trivia(&self, id: SyntaxKindId) -> bool;
 }
 
 impl SyntaxDefinition {

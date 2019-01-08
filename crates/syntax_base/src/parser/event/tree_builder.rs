@@ -41,8 +41,10 @@ impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
             eprintln!("e = {:?}", e);
         }
         let mut token_pos = 0;
+        let mut node_start: usize = 0;
+        let mut node_end: usize = 0;
+        let mut node_index: usize = 0;
         for i in 0..self.events.len() {
-//            let token = &self.tokens[i]; // TODO token position?
             match mem::replace(&mut self.events[i], tombstone()) {
                 ParseEvent::Start { kind, forward_parent } => {
                     if forward_parent.is_none() {
@@ -52,12 +54,15 @@ impl<'a, T, S: ParseEventSink<T>> TreeBuilder<'a, T, S> {
                     }
                 }
                 ParseEvent::Finish => {
-                    eprintln!("finish");
                     self.finish();
                 }
-                ParseEvent::Token { token_type } => {
+                ParseEvent::Token { token_type, is_trivia } => {
                     let token = &self.tokens[token_pos];
-                    self.leaf(token_type, token.len);
+                    if is_trivia {
+
+                    } else {
+                        self.leaf(token_type, token.len);
+                    }
                     token_pos += 1;
                     self.text_pos += token.len;
                 }

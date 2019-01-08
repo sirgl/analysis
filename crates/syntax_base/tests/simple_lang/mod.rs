@@ -20,6 +20,7 @@ use syntax_base::nodes::syntax::PlatformRootData;
 use syntax_base::nodes::syntax::SyntaxNode;
 use syntax_base::nodes::syntax::GreenNode;
 use syntax_base::language::LanguageId;
+use crate::simple_lang::syntax::WHITESPACE;
 
 
 pub struct SimpleLangSyntax {}
@@ -47,6 +48,10 @@ impl SyntaxDefinition for SimpleLangSyntax {
 
     fn id_by_syntax_kind_name(&self, name: &str) -> Option<SyntaxKindId> {
         unimplemented!()
+    }
+
+    fn is_trivia(&self, id: SyntaxKindId) -> bool {
+        id == WHITESPACE
     }
 }
 
