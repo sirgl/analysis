@@ -1,5 +1,7 @@
+mod line_index;
+
+/// Offsets of
 pub struct HighlightRange {
-    // offset of char??
     start_offset: usize,
     end_offset: usize
 }
@@ -34,26 +36,26 @@ struct LineIndex {
     indices: Vec<usize>
 }
 
-impl LineIndex {
-    fn new(text: &str) -> LineIndex {
-        // TODO build index
-//        text.chars().
-    }
-
-    fn line(&self, offset: usize) -> usize {
-        let result = self.indices.binary_search(&offset);
-        // TODO
-        panic!("Line for offset {} not found ", offset)
-    }
-}
-
-impl TextHighlighter {
-    fn render_highlight(&self, highlights: Vec<TextHighlight>, options: HighlightOptions, source: &str) -> String {
-        // TODO compute line index
-        let line_count = source.lines().count();
-        let highlight_by_line = Vec::<Vec<TextHighlight>>::new();
-        let mut text = String::new();
-
-    }
-}
+//impl LineIndex {
+//    fn new(text: &str) -> LineIndex {
+//        // TODO build index
+////        text.chars().
+//    }
+//
+//    fn line(&self, offset: usize) -> usize {
+//        let result = self.indices.binary_search(&offset);
+//        // TODO
+//        panic!("Line for offset {} not found ", offset)
+//    }
+//}
+//
+//impl TextHighlighter {
+//    fn render_highlight(&self, highlights: Vec<TextHighlight>, options: HighlightOptions, source: &str) -> String {
+//        // TODO compute line index
+//        let line_count = source.lines().count();
+//        let highlight_by_line = Vec::<Vec<TextHighlight>>::new();
+//        let mut text = String::new();
+//
+//    }
+//}
 

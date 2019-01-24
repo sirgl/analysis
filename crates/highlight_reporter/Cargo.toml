@@ -5,3 +5,4 @@ version = "0.1.0"
 authors = ["Roman.Ivanov <Roman.Ivanov@jetbrains.com>"]
 
 [dependencies]
+superslice = "0.1.0"
