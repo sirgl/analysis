@@ -15,7 +15,7 @@ pub(crate) struct ParserImpl<'a, T: TriviaHandler> {
     input: ParserInput<'a>,
     position: u32,
     language_id: LanguageId,
-    trivia_handler: &'a TriviaHandler
+    trivia_handler: &'a T
 }
 
 
@@ -69,11 +69,11 @@ impl<'a, T: TriviaHandler> ParserImpl<'a, T> {
 
     pub fn trivia(&mut self, token_type: SyntaxKindId) {
         self.position += 1;
-        self.event(ParseEvent::Trivia { token_type })
+        self.event(ParseEvent::Token { is_trivia: true,  token_type })
     }
 
     pub fn leaf(&mut self, token_type: SyntaxKindId) {
-        self.event(ParseEvent::Token { token_type });
+        self.event(ParseEvent::Token { is_trivia: false, token_type, });
         self.bump();
     }
 
@@ -81,8 +81,8 @@ impl<'a, T: TriviaHandler> ParserImpl<'a, T> {
         self.events.push(event)
     }
 
-    pub fn build<T, S: ParseEventSink<T>>(mut self, sink: S) -> T {
-        let builder: TreeBuilder<T, S> = TreeBuilder::new(
+    pub fn build<TR, S: ParseEventSink<TR>>(mut self, sink: S) -> TR {
+        let builder: TreeBuilder<TR, S> = TreeBuilder::new(
             sink,
             &self.input.tokens,
             &mut self.events,

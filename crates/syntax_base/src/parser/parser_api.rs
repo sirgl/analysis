@@ -17,9 +17,7 @@ pub struct TriviaContext<'a> {
 
 
 pub trait TriviaHandler {
-    fn is_trivia(&self, kind: SyntaxKindId);
-
-    fn select_token_trivia(&self, context: &TriviaContext) -> Range<u32>;
+    fn is_trivia(&self, kind: SyntaxKindId) -> bool;
 
     fn select_start_node_trivia(&self, context: &TriviaContext) -> u32;
 
@@ -27,11 +25,12 @@ pub trait TriviaHandler {
 }
 
 
-pub struct ParserApi<'a>(ParserImpl<'a>);
+pub struct ParserApi<'a, T: TriviaHandler>(ParserImpl<'a, T>);
 
-impl <'a> ParserApi<'a> {
-    pub fn new(tokens: Vec<TokenInfo>, text: &'a str, language_id: LanguageId) -> Self {
-        ParserApi(ParserImpl::new(tokens, text, language_id))
+
+impl <'a, T: TriviaHandler> ParserApi<'a, T> {
+    pub fn new(tokens: Vec<TokenInfo>, text: &'a str, language_id: LanguageId, trivia_handler: &'a T) -> Self {
+        ParserApi(ParserImpl::new(tokens, text, language_id, trivia_handler))
     }
 
     // TODO must not expose bump!
@@ -41,7 +40,7 @@ impl <'a> ParserApi<'a> {
     }
 
     /// Returns true, if at current position token with given kind
-    pub fn at<T: SyntaxKindSet>(&mut self, set: T) -> bool {
+    pub fn at<S: SyntaxKindSet>(&mut self, set: S) -> bool {
         set.matches_by_id(self.0.nth(0))
     }
 
@@ -49,7 +48,7 @@ impl <'a> ParserApi<'a> {
         Marker::new(self.0.start())
     }
 
-    pub fn error<T: Into<String>>(&mut self, message: T) {
+    pub fn error<E: Into<String>>(&mut self, message: E) {
         self.0.error(message.into())
     }
 
@@ -78,7 +77,7 @@ impl <'a> ParserApi<'a> {
         self.0.leaf(token_type)
     }
 
-    pub fn build<T, S: ParseEventSink<T>>(self, sink: S) -> T {
+    pub fn build<TR, S: ParseEventSink<TR>>(self, sink: S) -> TR {
         self.0.build(sink)
     }
 }
@@ -95,13 +94,13 @@ impl Marker {
 }
 
 impl Marker {
-    pub fn complete(mut self, p: &mut ParserApi, syntax_kind: SyntaxKindId) -> CompletedMarker {
+    pub fn complete<T: TriviaHandler>(mut self, p: &mut ParserApi<T>, syntax_kind: SyntaxKindId) -> CompletedMarker {
         self.bomb.defuse();
         p.0.finish(self.position, syntax_kind);
         CompletedMarker::new(self.position, syntax_kind)
     }
 
-    pub fn abandon(mut self, p: &mut ParserApi) {
+    pub fn abandon<T: TriviaHandler>(mut self, p: &mut ParserApi<T>) {
         // TODO
         unimplemented!();
 //        self.bomb.defuse();
